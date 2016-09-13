@@ -21,6 +21,8 @@ classdef GravitationalBody
 	end
 	
 	methods
+        function cancer = spread(divide)
+        end
 		function mass = CalculateMass(this)
 			% COMPUTEMASS Calculates the absolute mass of this body, using
 			% the radius. In this 2D simulation, the mass is represented by
