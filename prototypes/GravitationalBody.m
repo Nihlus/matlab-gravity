@@ -28,7 +28,7 @@ classdef GravitationalBody
 			%	mass = COMPUTEMASS() Calculates the mass of the body using
 			%	the area function of a circle.
 			
-			mass = this.Radius^2 * pi;
+			mass = this.Radius^(2) * pi;
 		end
 		
 		function ComputeForces(this, gravitationalBody)
