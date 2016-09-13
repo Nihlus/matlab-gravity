@@ -67,6 +67,45 @@ classdef GravitationalBody
 	end
 	
 	methods
+		function isColliding = IsCollidingWith(this, gravitationalBody)
+			% ISCOLLIDINGWITH Determines whether or not this body is 
+			%	colliding with the provided body.
+			%	ISCOLLIDINGWITH(gravitationalBody) Returns true if the
+			%	bodies are colliding; otherwise, false.
+			
+			if (~STRCMP(class(gravitationalBody), 'GravitationalBody'))
+				fprintf('Invalid input object to ApplyForces - must be another gravitational body.');
+				return
+			end
+			
+			collisionThreshold = this.Radius + gravitationalBody.Radius;
+			
+			if (this.DistanceTo(gravitationalBody) <= collisionThreshold)
+				isColliding = true;
+			else
+				isColliding = false;
+			end
+		end
+		
+		function distance = DistanceTo(this, gravitationalBody)
+			% DISTANCETO Computes the distance between this body and
+			%	another supplied body.
+			%	DISTANCETO(gravitationalBody) Computes the absolute
+			%	distance to another body from this body, using the formula 
+			%	derived from the pythagorean theorem.
+			
+			if (~STRCMP(class(gravitationalBody), 'GravitationalBody'))
+				fprintf('Invalid input object to ApplyForces - must be another gravitational body.');
+				return
+			end
+			
+			distance = sqrt ( ...
+				(gravitationalBody.XY(1) - this.XY(1)^2) ...
+				+ ...
+				(gravitationalBody.XY(2) - this.XY(2)^2) ...
+				);
+		end
+		
 		function mass = CalculateMass(this)
 			% COMPUTEMASS Calculates the absolute mass of this body, using
 			% the radius. In this 2D simulation, the mass is represented by
@@ -99,10 +138,14 @@ classdef GravitationalBody
 		end
 		
 		% Github Issue #3
-		function ApplyForces(this, seconds)
-			% APPLYFORCES Apply the calculated forces over a period of time
-			%	APPLYFORCES(seconds) Applies the forces over a period of
-			%	s seconds.
+		function SimulateForces(this, deltaTime, seconds)
+			% SIMULATEFORCES Simulate the calculated forces over a period of time
+			%	SIMULATEFORCES(deltaTime, seconds) Applies the forces over a period of
+			%	s seconds, adjusted by deltaTime.
+			
+			if (isnumeric(deltaTime))
+				fprintf('Invalid input. "deltaTime" must be a numeric value strictly more than 0.');
+			end
 			
 			if (isnumeric(seconds))
 				fprintf('Invalid input. "Seconds" must be a numeric value strictly more than 0.');
