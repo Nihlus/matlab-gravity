@@ -20,6 +20,52 @@ classdef GravitationalBody
 		Acceleration = 0
 	end
 	
+	methods (Static)
+		function body = CreateRandomBody(minMaxX, minMaxY, minMaxR)
+			% CREATERANDOMBODY Creates a random gravitational body,
+			% constrained to the parameters provided.
+			%
+			% PARAM minMaxX The starting range of the X position of the body 
+			% (as a 2-element vector).
+			% PARAM minMaxY The starting range of the Y position of the body
+			% (as a 2-element vector).
+			% PARAM minMaxR The minimum and maximum radius of the body
+			% (as a 2-element vector).
+			
+			% Check the input variables
+			if (numel(minMaxX) ~= 2)
+				fprintf('The parameter "minXY" must be a 2-element vector.');
+			end
+			
+			if (numel(minMaxY) ~= 2)
+				fprintf('The parameter "maxXY" must be a 2-element vector.');
+			end
+			
+			if (numel(minMaxR) ~= 2)
+				fprintf('The parameter "minMaxR" must be a 2-element vector.');
+			end
+			
+			% Initialize a new body
+			body = GravitationalBody();
+			
+			% Create two random X and Y values
+			randX = minMaxX(1) + (minMaxX(2) - minMaxX(1)).*rand(1,1);
+			randY = minMaxY(1) + (minMaxY(2) - minMaxY(1)).*rand(1,1);
+			
+			body.XY = [randX, randY];
+			
+			% Create a random radius
+			randR = minMaxR(1) + (minMaxR(2) - minMaxR(1)).*rand(1,1);
+			
+			body.Radius = randR;
+			
+			% Create a random colour
+			randColour = rand(1, 3);
+			
+			body.RGB = randColour;
+		end
+	end
+	
 	methods
 		function mass = CalculateMass(this)
 			% COMPUTEMASS Calculates the absolute mass of this body, using
@@ -31,6 +77,7 @@ classdef GravitationalBody
 			mass = this.Radius^(2) * pi;
 		end
 		
+		% Github Issue #2
 		function ComputeForces(this, gravitationalBody)
 			% COMPUTEFORCES Computes the forces between the input body and
 			% this body.
@@ -51,6 +98,7 @@ classdef GravitationalBody
 			% this.XYDirection
 		end
 		
+		% Github Issue #3
 		function ApplyForces(this, seconds)
 			% APPLYFORCES Apply the calculated forces over a period of time
 			%	APPLYFORCES(seconds) Applies the forces over a period of
