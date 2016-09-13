@@ -71,7 +71,7 @@ classdef GravitationalBody
 		end
 		
 		
-		function Absorb(this, gravitationalBody)
+		function AbsorbBody(this, gravitationalBody)
 			% ABSORB Absorbs the input body, combining its mass with the
 			% mass of this body.
 			%	ABSORB(seconds) Absorb the input body. The masses of the
