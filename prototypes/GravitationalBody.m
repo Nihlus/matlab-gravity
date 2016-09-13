@@ -71,6 +71,7 @@ classdef GravitationalBody
 		end
 		
 		
+		% GitHub Issue #1
 		function AbsorbBody(this, gravitationalBody)
 			% ABSORB Absorbs the input body, combining its mass with the
 			% mass of this body.
