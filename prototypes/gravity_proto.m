@@ -23,6 +23,10 @@ function gravity_proto()
 end
 
 function printSecondsFormatted(seconds)
+	if (seconds < 0)
+		return
+	end
+
 	ONE_MINUTE = 60;
 	
 	danglingSeconds = rem(seconds, ONE_MINUTE);
