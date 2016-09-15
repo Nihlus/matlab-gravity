@@ -1,4 +1,4 @@
-classdef GravitationalBody
+hhhhhhclassdef GravitationalBody
 	%GravitationalBody A structure representing a gravitational body.
 	%   This class contains all data and methods required to
 	%	hold and compute relational gravity data.
