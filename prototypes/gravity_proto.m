@@ -8,13 +8,41 @@ function gravity_proto()
 
 	clf('reset');
 	graphAxes = axes('PlotBoxAspectRatio', [1, 1, 1]);
-	axis([0, 100, 0, 100]);
+	axis([0, 10, 0, 10]);
 	% Generate a random RGB triplet
 	randColour = rand(1, 3);
+	disp(randColour);
 
 	% Display a circle using that triplet
-	viscircles(graphAxes, [40, 36; 80, 17], [6, 2], 'Color', randColour);
-	disp(randColour);
+	hold(graphAxes)
+	viscircles(graphAxes, [1, 0; 4, 0], [1, 2], 'Color', randColour);
+
+	disp(coordinatesAtAngle(pi/6, 8, 2, 5));
+	
+	printSecondsFormatted(7832);
+end
+
+function printSecondsFormatted(seconds)
+	if (seconds < 0)
+		return
+	end
+
+	ONE_MINUTE = 60;
+	
+	danglingSeconds = rem(seconds, ONE_MINUTE);
+	totalMinutes = (seconds - danglingSeconds) / 60;
+	
+	danglingMinutes = rem(totalMinutes, 60);
+	totalHours = (totalMinutes - danglingMinutes) / 60;
+	
+	fprintf('Hours: %d, Minutes: %d, Seconds: %d\n', totalHours, danglingMinutes, danglingSeconds);
+end
+
+function coordinates = coordinatesAtAngle(angle, radius, X, Y)
+	XCoordinate = (radius * cos(angle)) + X;
+	YCoordinate = (radius * sin(angle)) + Y;
+	
+	coordinates = [XCoordinate, YCoordinate];
 end
 
 function circle(x, y, r, spec, colour)
