@@ -148,12 +148,16 @@ classdef GravitationalBody < handle
             end
             
             if (this.XY(2) > gravitationalBody.XY(2))
-                Fy = - ( (G * this.CalculateMass() * gravitationalBody.CalculateMass()) / sqrt(gravitationalBody.XY(2) - this.XY(2)) );
-            elseif (this.XY(1) < gravitationalBody.XY(1))
+                Fy = - ( (G * this.CalculateMass() * gravitationalBody.CalculateMass()) / sqrt(this.XY(2) - gravitationalBody.XY(2)) );
+            elseif (this.XY(2) < gravitationalBody.XY(2))
+                Fy = ( (G * this.CalculateMass() * gravitationalBody.CalculateMass()) / sqrt(gravitationalBody.XY(2) - this.XY(2)) );
             else
+                Fy = 0;
             end
             
             this.XYDirection(1) = this.XYDirection(1) + Fx;
+            this.XYDirection(2) = this.XYDirection(2) + Fy;
+            this.Accelera
 		end
 		
 		% Github Issue #3
