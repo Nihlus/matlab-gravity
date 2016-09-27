@@ -45,7 +45,6 @@ function main()
 		% Run one frame of the simulation and store the time taken to 
 		% perform that simulation.
 		lastFrameTime = RunFrame(gravitationalBodies, lastFrameTime, timeStep, graphAxes) * 1000;
-		disp(lastFrameTime);
 	end
 end
 
@@ -110,6 +109,9 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 			hold on
 		end
 	end
+	
+	drawnow limitrate;
+	pause(0.01);
 	
 	timeTaken = toc;
 end
