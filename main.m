@@ -8,6 +8,10 @@ function main()
 	lastFrameTime = 5;
 	
 	timeStep = 0.1;
+	
+	clf('reset');
+	graphAxes = axes('PlotBoxAspectRatio', [1, 1, 1]);
+	axis([minMaxX, minMaxY]);
 
 	% PLACEHOLDER: Generate a set of random bodies
 	gravitationalBodies = GravitationalBody.empty(bodyCount, 0);
@@ -33,12 +37,12 @@ function main()
 		
 		% Run one frame of the simulation and store the time taken to 
 		% perform that simulation.
-		lastFrameTime = timeit(RunFrame(lastFrameTime, timeStep)) / 1000;
+		lastFrameTime = timeit(RunFrame(lastFrameTime, timeStep, graphAxes)) / 1000;
 		
 	end
 end
 
-function RunFrame(deltaTime, seconds)
+function RunFrame(deltaTime, seconds, graphAxes)
 	% for all bodies
 	for i = 1 : size(gravitationalBodies, 1)
 		gravitationalBody = gravitationalBodies(i);
@@ -85,6 +89,12 @@ function RunFrame(deltaTime, seconds)
 	% Simulate all forces
 	for j = 1 : size(gravitationalBodies, 1)
 		gravitationalBody = gravitationalBodies(i);
-		gravitationalBody.SimulateForces(deltaTime, timeStep);
+		gravitationalBody.SimulateForces(deltaTime, seconds);
+	end
+	
+	% Finally, draw all bodies
+	for i = 1 : size(gravitationalBodies, 1)
+		gravitationalBody = gravitationalBodies(i);
+		gravitationalBody.Draw(graphAxes);
 	end
 end

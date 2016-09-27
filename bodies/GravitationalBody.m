@@ -1,4 +1,4 @@
-classdef GravitationalBody
+classdef GravitationalBody < handle
 	%GravitationalBody A structure representing a gravitational body.
 	%   This class contains all data and methods required to
 	%	hold and compute relational gravity data.
@@ -171,11 +171,19 @@ classdef GravitationalBody
 			%	averaged between each other.
 			
 			% Combine the masses
+			this.Radius = gravitationalBody.Radius + this.Radius;
 			
 			% Compute and apply the average positions
+			this.XY = [ ...
+				(this.XY(1) + gravitationalBody.XY(1)) / 2, ... 
+				(this.XY(2) + gravitationalBody.XY(2)) / 2 ...
+				];
 			
 			% "Kill" the other body
 			gravitationalBody.IsAlive = false;
+		end
+		
+		function Draw(this, graphAxes)
 		end
 	end
 	
