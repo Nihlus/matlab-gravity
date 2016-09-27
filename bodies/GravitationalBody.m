@@ -157,7 +157,7 @@ classdef GravitationalBody < handle
             
             this.XYDirection(1) = this.XYDirection(1) + Fx;
             this.XYDirection(2) = this.XYDirection(2) + Fy;
-            this.Acceleration = sqrt( this.XYDirection(1) + this.XYDirection(2) );
+            this.Acceleration = sqrt( this.XYDirection(1) ^ 2 + this.XYDirection(2) ^ 2 );
 		end
 		
 		% Github Issue #3
