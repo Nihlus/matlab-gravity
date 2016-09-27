@@ -55,7 +55,7 @@ classdef GravitationalBody < handle
 			body.XY = [randX, randY];
 			
 			% Create a random radius
-			randR = minMaxR(1) + (minMaxR(2) - minMaxR(1)).*rand(1,1);
+			randR = (minMaxR(2) - minMaxR(1)).*rand(1,1) + minMaxR(1);
 			
 			body.Radius = randR;
 			
@@ -207,6 +207,10 @@ classdef GravitationalBody < handle
 		end
 		
 		function Draw(this, graphAxes)
+				rectangle(graphAxes, ...
+					'Position', [this.XY(1) - this.Radius, this.XY(2) - this.Radius, this.Radius * 2, this.Radius * 2], ...
+					'Curvature', [1, 1], ...
+					'FaceColor', this.RGB);
 		end
 	end
 	

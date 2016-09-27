@@ -8,7 +8,7 @@ function main()
 	bodyCount = 10;
 	minMaxX = [0, 100];
 	minMaxY = [0, 100];
-	minMaxR = [5, 15];
+	minMaxR = [2, 4];
 	
 	lastFrameTime = 5;
 	
@@ -17,7 +17,8 @@ function main()
 	
 	clf('reset');
 	graphAxes = axes('PlotBoxAspectRatio', [1, 1, 1]);
-	axis([minMaxX, minMaxY]);
+	axis(graphAxes, [minMaxX, minMaxY]);
+	grid(graphAxes, 'on');
 
 	% PLACEHOLDER: Generate a set of random bodies
 	gravitationalBodies = GravitationalBody.empty(bodyCount, 0);
@@ -100,10 +101,14 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 	end
 	
 	% Finally, draw all bodies
-	clf % Clear the previous frame (swap the buffers, essentially)
+	hold off % Clear the previous frame (swap the buffers, essentially)
 	for i = 1 : size(gravitationalBodies, 2)
 		gravitationalBody = gravitationalBodies(i);
 		gravitationalBody.Draw(graphAxes);
+		
+		if (i == 1)
+			hold on
+		end
 	end
 	
 	timeTaken = toc;
