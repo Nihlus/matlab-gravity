@@ -93,6 +93,7 @@ function RunFrame(deltaTime, seconds, graphAxes)
 	end
 	
 	% Finally, draw all bodies
+	clf % Clear the previous frame (swap the buffers, essentially)
 	for i = 1 : size(gravitationalBodies, 1)
 		gravitationalBody = gravitationalBodies(i);
 		gravitationalBody.Draw(graphAxes);
