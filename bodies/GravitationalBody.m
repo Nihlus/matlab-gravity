@@ -73,7 +73,7 @@ classdef GravitationalBody < handle
 			%	ISCOLLIDINGWITH(gravitationalBody) Returns true if the
 			%	bodies are colliding; otherwise, false.
 			
-			if (~STRCMP(class(gravitationalBody), 'GravitationalBody'))
+			if (~isa(gravitationalBody, 'GravitationalBody'))
 				fprintf('Invalid input object to ApplyForces - must be another gravitational body.');
 				return
 			end
@@ -94,15 +94,15 @@ classdef GravitationalBody < handle
 			%	distance to another body from this body, using the formula 
 			%	derived from the pythagorean theorem.
 			
-			if (~STRCMP(class(gravitationalBody), 'GravitationalBody'))
+			if (~isa(gravitationalBody, 'GravitationalBody'))
 				fprintf('Invalid input object to ApplyForces - must be another gravitational body.');
 				return
 			end
 			
 			distance = sqrt ( ...
-				(gravitationalBody.XY(1) - this.XY(1)^2) ...
+				(gravitationalBody.XY(1) - this.XY(1))^2 ...
 				+ ...
-				(gravitationalBody.XY(2) - this.XY(2)^2) ...
+				(gravitationalBody.XY(2) - this.XY(2))^2 ...
 				);
 		end
 		
@@ -125,7 +125,7 @@ classdef GravitationalBody < handle
 			%	body, and cumulatively applies them to this body's stored
 			%	forces.
 			
-			if (~STRCMP(class(gravitationalBody), 'GravitationalBody'))
+			if (~isa(gravitationalBody, 'GravitationalBody'))
 				fprintf('Invalid input object to ApplyForces - must be another gravitational body.');
 				return
 			end
@@ -143,11 +143,11 @@ classdef GravitationalBody < handle
 			%	SIMULATEFORCES(deltaTime, seconds) Applies the forces over a period of
 			%	s seconds, adjusted by deltaTime.
 			
-			if (isnumeric(deltaTime))
+			if (~isnumeric(deltaTime))
 				fprintf('Invalid input. "deltaTime" must be a numeric value strictly more than 0.');
 			end
 			
-			if (isnumeric(seconds))
+			if (~isnumeric(seconds))
 				fprintf('Invalid input. "Seconds" must be a numeric value strictly more than 0.');
 			end
 			
