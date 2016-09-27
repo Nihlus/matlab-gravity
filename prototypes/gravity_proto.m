@@ -1,4 +1,4 @@
-function gravity_proto()
+1function gravity_proto()
 	posm = [[7, 3]; [8, 3]];
 	disp(posm);
 	disp(mean(posm, 2));
