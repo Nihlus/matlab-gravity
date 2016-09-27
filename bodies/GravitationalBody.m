@@ -213,6 +213,4 @@ classdef GravitationalBody < handle
 					'FaceColor', this.RGB);
 		end
 	end
-	
 end
-

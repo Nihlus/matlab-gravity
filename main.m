@@ -80,6 +80,11 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 		end
 
 		% Force calculations
+		% Zero out the force from last frame
+		gravitationalBody.XYDirection = [0, 0];
+		gravitationalBody.Acceleration = 0;
+		
+		% Recompute the affecting forces
 		for j = 1 : size(gravitationalBodies, 2)
 			otherGravitationalBody = gravitationalBodies(j);
 
