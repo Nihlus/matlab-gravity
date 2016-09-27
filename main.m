@@ -58,7 +58,15 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 	% for all bodies
 	for i = 1 : size(gravitationalBodies, 2)
 		gravitationalBody = gravitationalBodies(i);
+		
+		if (~gravitationalBody.IsAlive)
+			continue;
+		end
 
+		% Zero out the force from last frame
+		gravitationalBody.XYDirection = [0, 0];
+		gravitationalBody.Acceleration = 0;
+		
 		% Check for collisions
 		for j = 1 : size(gravitationalBodies, 2)
 			otherGravitationalBody = gravitationalBodies(j);
@@ -76,36 +84,21 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 			isColliding = gravitationalBody.IsCollidingWith(otherGravitationalBody);
 			if (isColliding)
 				gravitationalBody.AbsorbBody(otherGravitationalBody);
+			else
+				% Compute the forces
+				gravitationalBody.ComputeForces(otherGravitationalBody);
 			end
-		end
-
-		% Force calculations
-		% Zero out the force from last frame
-		gravitationalBody.XYDirection = [0, 0];
-		gravitationalBody.Acceleration = 0;
-		
-		% Recompute the affecting forces
-		for j = 1 : size(gravitationalBodies, 2)
-			otherGravitationalBody = gravitationalBodies(j);
-
-			% Skip itself
-			if (j == i)
-				continue;
-			end
-
-			% If this body is not alive, skip it
-			if (~otherGravitationalBody.IsAlive)
-				continue;
-			end
-
-			% Compute the forces
-			gravitationalBody.ComputeForces(otherGravitationalBody);
 		end
 	end
 
 	% Simulate all forces
 	for j = 1 : size(gravitationalBodies, 2)
 		gravitationalBody = gravitationalBodies(i);
+		
+		if (~gravitationalBody.IsAlive)
+			continue;
+		end
+		
 		gravitationalBody.SimulateForces(deltaTime, seconds);
 	end
 	
@@ -113,6 +106,11 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 	hold off % Clear the previous frame (swap the buffers, essentially)
 	for i = 1 : size(gravitationalBodies, 2)
 		gravitationalBody = gravitationalBodies(i);
+		
+		if (~gravitationalBody.IsAlive)
+			continue;
+		end
+		
 		gravitationalBody.Draw(graphAxes);
 		
 		if (i == 1)
@@ -120,7 +118,7 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 		end
 	end
 	
-	drawnow limitrate;
+	drawnow;
 	pause(0.01);
 	
 	timeTaken = toc;
