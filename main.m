@@ -5,9 +5,9 @@ function main()
 	%minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax]: \n');
 	%minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax]: \n');;
 	
-	bodyCount = 10;
-	minMaxX = [0, 100];
-	minMaxY = [0, 100];
+	bodyCount = 100;
+	minMaxX = [0, 1000];
+	minMaxY = [0, 1000];
 	minMaxR = [2, 4];
 	
 	lastFrameTime = 5;
@@ -15,11 +15,16 @@ function main()
 	%timeStep = input('Enter the desired time step of the simulation: \n');
 	timeStep = 0.1;
 	
+	% Graph setup
 	clf('reset');
 	graphAxes = axes('PlotBoxAspectRatio', [1, 1, 1]);
 	axis(graphAxes, [minMaxX, minMaxY]);
 	grid(graphAxes, 'on');
 
+	% Random setup
+	rng('shuffle', 'simdTwister')
+	% rng(input('Enter a seed for the random number generator: \n'), 'simdTwister')
+	
 	% PLACEHOLDER: Generate a set of random bodies
 	gravitationalBodies = GravitationalBody.empty(bodyCount, 0);
 	for i = 1 : bodyCount
