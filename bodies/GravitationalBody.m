@@ -4,6 +4,8 @@ classdef GravitationalBody < handle
 	%	hold and compute relational gravity data.
 	
 	properties	
+		IsAlive = true;
+		
 		% Positional data as a 2-element vector
 		XY = [0, 0]
 		
@@ -14,7 +16,7 @@ classdef GravitationalBody < handle
 		RGB = [1, 1, 1]
 		
 		% Forces
-		XYDirection = [0, 0]
+		XYChange = [0, 0]
 		Acceleration = 0
 	end
 	
@@ -138,9 +140,8 @@ classdef GravitationalBody < handle
 			% this.Acceleration
 			% this.XYDirection
             G = 6.67384;
-            Fx = 0;
-            Fy = 0;
             
+			%{
             if (this.XY(1) > gravitationalBody.XY(1))
                 Fx = -((G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (this.XY(1) - gravitationalBody.XY(1)) ^ 2 );
             elseif (this.XY(1) < gravitationalBody.XY(1))
@@ -156,10 +157,22 @@ classdef GravitationalBody < handle
             else
                 Fy = 0;
             end
-            
-            this.XYDirection(1) = this.XYDirection(1) + Fx;
-            this.XYDirection(2) = this.XYDirection(2) + Fy;
-            this.Acceleration = sqrt( this.XYDirection(1) ^ 2 + this.XYDirection(2) ^ 2 );
+			%}
+            F = (G * this.CalculateMass() * gravitationalBody.CalculateMass()) / this.DistanceTo(gravitationalBody)^2;
+			v = (gravitationalBody.XY - this.XY);
+			u = v / norm(v);
+			
+			Pd = this.XY + (F * u);
+			
+			this.XYChange = Pd - this.XY;
+			
+            % this.XYDirection(1) = this.XYDirection(1) + Fx;
+            % this.XYDirection(2) = this.XYDirection(2) + Fy;
+            % this.Acceleration = sqrt( this.XYDirection(1) ^ 2 + this.XYDirection(2) ^ 2 );
+				
+			% acceleration
+			% speed
+			% 
 		end
 		
 		% Github Issue #3
@@ -178,18 +191,43 @@ classdef GravitationalBody < handle
 			
 			if (seconds <= 0)
 				fprintf('Invalid input. "Seconds" must be strictly more than 0.');
-            end
+			end
             	
 			% Apply the calculated forces on the body to the following
 			% variables:
 			
 			% this.XY
             
+			%{
             xt = this.XY(1);
             yt = this.XY(2);
-            alpha = (this.Acceleration/seconds)*deltaTime;
-            this.XY(1) = GravitationalBody.lerp(xt, this.XYDirection(1), alpha);
-            this.XY(2) = GravitationalBody.lerp(yt, this.XYDirection(2), alpha);
+            alpha = (this.Acceleration * seconds) * deltaTime;
+			
+			newX = GravitationalBody.lerp(xt, this.XYChange(1), alpha);
+			newY = GravitationalBody.lerp(yt, this.XYChange(2), alpha);
+			
+            this.XY(1) = newX;
+            this.XY(2) = newY;
+			%}
+			
+			Pp = this.XY + this.XYChange;
+			F = sqrt ( ...
+				(Pp(1) - this.XY(1))^2 ...
+				+ ...
+				(Pp(2) - this.XY(2))^2 ...
+				);
+			
+			this.Acceleration = F / this.CalculateMass();
+			
+			xt = this.XY(1);
+            yt = this.XY(2);
+            alpha = (this.Acceleration * seconds^2) * deltaTime;
+			
+			newX = GravitationalBody.lerp(xt, Pp(1), alpha);
+			newY = GravitationalBody.lerp(yt, Pp(2), alpha);
+			
+            this.XY(1) = newX;
+            this.XY(2) = newY;
         end
         
 		% GitHub Issue #1
@@ -201,18 +239,25 @@ classdef GravitationalBody < handle
 			%	averaged between each other.
 			
 			% Combine the masses
-			this.Radius = gravitationalBody.Radius + this.Radius;
+			this.Radius = sqrt((gravitationalBody.Radius^2*pi + this.Radius^2*pi) / pi);
 			
 			% Compute and apply the average positions
 			this.XY = [ ...
 				(this.XY(1) + gravitationalBody.XY(1)) / 2, ... 
 				(this.XY(2) + gravitationalBody.XY(2)) / 2 ...
 				];
+			
+			% "Kill" the other body
+			gravitationalBody.IsAlive = false;
 		end
 		
 		function Draw(this, graphAxes)
+			xpos = this.XY(1) - this.Radius;
+			ypos = this.XY(2) - this.Radius;
+			side = this.Radius * 2;
+			
 				rectangle(graphAxes, ...
-					'Position', [this.XY(1) - this.Radius, this.XY(2) - this.Radius, this.Radius * 2, this.Radius * 2], ...
+					'Position', [xpos, ypos, side, side], ...
 					'Curvature', [1, 1], ...
 					'FaceColor', this.RGB);
 		end
