@@ -1,52 +1,53 @@
 function main()
-	% Setup
-	%bodyCount = input('Enter the desired number of simulated bodies: \n');
-	%minMaxX = input('Enter the minimum and maxiumum X values as a vector in the format [XMin, XMax]: \n');
-	%minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax]: \n');
-	%minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax]: \n');;
+	bodyCount;
+	minMaxX;
+	minMaxY;
+	minMaxR;
 	
-	bodyCount = 100;
-	minMaxX = [0, 1000];
-	minMaxY = [0, 1000];
-	minMaxR = [2, 4];
+	timeStep;
+
+	% Setup - simulation parameters
+	isDebug = true;
+	if (isDebug)
+		bodyCount = 100;
+		minMaxX = [0, 1000];
+		minMaxY = [0, 1000];
+		minMaxR = [2, 8];
+		
+		timeStep = 0.1;
+		
+		rng('shuffle', 'simdTwister')
+	else
+		bodyCount = input('Enter the desired number of simulated bodies: \n$: ');
+		minMaxX = input('Enter the minimum and maxiumum X values as a vector in the format [XMin, XMax]: \n$: ');
+		minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax]: \n$: ');
+		minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax]: \n$: ');
+		
+		timeStep = input('Enter the desired time step of the simulation: \n$: ');
+		
+		rng(input('Enter a seed for the random number generator: \n'), 'simdTwister')
+		
+		input('Parameters loaded. Press enter to begin.');
+	end
 	
+	% Setup - time delta
 	lastFrameTime = 5;
 	
-	%timeStep = input('Enter the desired time step of the simulation: \n');
-	timeStep = 0.1;
-	
-	% Graph setup
+	% Setup - rendering
 	clf('reset');
 	graphAxes = axes('PlotBoxAspectRatio', [1, 1, 1]);
 	axis(graphAxes, [minMaxX, minMaxY]);
 	grid(graphAxes, 'on');
 
-	% Random setup
-	rng('shuffle', 'simdTwister')
-	% rng(input('Enter a seed for the random number generator: \n'), 'simdTwister')
-	
-	% PLACEHOLDER: Generate a set of random bodies
+	% Setup - body generation
 	gravitationalBodies = GravitationalBody.empty(bodyCount, 0);
 	for i = 1 : bodyCount
 		gravitationalBodies(i) = GravitationalBody.CreateRandomBody(minMaxX, minMaxY, minMaxR);
 	end
 	
-	areAllBodiesMerged = false;
-	while (~areAllBodiesMerged)
-		% Check if all bodies have merged
-		numAliveBodies = 0;
-		for i = 1 : size(gravitationalBodies, 2)
-			gravitationalBody = gravitationalBodies(i);
-
-			if (gravitationalBody.IsAlive)
-				numAliveBodies = numAliveBodies + 1;
-			end
-		end
-
-		if (numAliveBodies <= 1)
-			areAllBodiesMerged = true;
-		end
-		
+	% Run simulation
+	
+	while (size(gravitationalBodies,  2) > 1)
 		% Run one frame of the simulation and store the time taken to 
 		% perform that simulation.
 		lastFrameTime = RunFrame(gravitationalBodies, lastFrameTime, timeStep, graphAxes) * 1000;
@@ -58,10 +59,6 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 	% for all bodies
 	for i = 1 : size(gravitationalBodies, 2)
 		gravitationalBody = gravitationalBodies(i);
-		
-		if (~gravitationalBody.IsAlive)
-			continue;
-		end
 
 		% Zero out the force from last frame
 		gravitationalBody.XYDirection = [0, 0];
@@ -76,14 +73,12 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 				continue;
 			end
 
-			% If this body is not alive, skip it
-			if (~otherGravitationalBody.IsAlive)
-				continue;
-			end
-
 			isColliding = gravitationalBody.IsCollidingWith(otherGravitationalBody);
 			if (isColliding)
 				gravitationalBody.AbsorbBody(otherGravitationalBody);
+				
+				% Delete the body from the array
+				gravitationalBodies(j) = [];
 			else
 				% Compute the forces
 				gravitationalBody.ComputeForces(otherGravitationalBody);
@@ -94,11 +89,7 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 	% Simulate all forces
 	for j = 1 : size(gravitationalBodies, 2)
 		gravitationalBody = gravitationalBodies(i);
-		
-		if (~gravitationalBody.IsAlive)
-			continue;
-		end
-		
+
 		gravitationalBody.SimulateForces(deltaTime, seconds);
 	end
 	
@@ -106,11 +97,7 @@ function timeTaken = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes
 	hold off % Clear the previous frame (swap the buffers, essentially)
 	for i = 1 : size(gravitationalBodies, 2)
 		gravitationalBody = gravitationalBodies(i);
-		
-		if (~gravitationalBody.IsAlive)
-			continue;
-		end
-		
+
 		gravitationalBody.Draw(graphAxes);
 		
 		if (i == 1)

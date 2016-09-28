@@ -3,9 +3,7 @@ classdef GravitationalBody < handle
 	%   This class contains all data and methods required to
 	%	hold and compute relational gravity data.
 	
-	properties
-		IsAlive = true
-		
+	properties	
 		% Positional data as a 2-element vector
 		XY = [0, 0]
 		
@@ -140,17 +138,17 @@ classdef GravitationalBody < handle
             Fy = 0;
             
             if (this.XY(1) > gravitationalBody.XY(1))
-                Fx = - ( (G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (this.XY(1) - gravitationalBody.XY(1)) ^ 2 );
+                Fx = -((G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (this.XY(1) - gravitationalBody.XY(1)) ^ 2 );
             elseif (this.XY(1) < gravitationalBody.XY(1))
-                Fx = ( (G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (gravitationalBody.XY(1) - this.XY(1)) ^ 2 );
+                Fx = ((G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (gravitationalBody.XY(1) - this.XY(1)) ^ 2 );
             else
                 Fx = 0;
             end
             
             if (this.XY(2) > gravitationalBody.XY(2))
-                Fy = - ( (G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (this.XY(2) - gravitationalBody.XY(2)) ^ 2 );
+                Fy = -((G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (this.XY(2) - gravitationalBody.XY(2)) ^ 2 );
             elseif (this.XY(2) < gravitationalBody.XY(2))
-                Fy = ( (G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (gravitationalBody.XY(2) - this.XY(2)) ^ 2 );
+                Fy = ((G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (gravitationalBody.XY(2) - this.XY(2)) ^ 2 );
             else
                 Fy = 0;
             end
@@ -201,9 +199,6 @@ classdef GravitationalBody < handle
 				(this.XY(1) + gravitationalBody.XY(1)) / 2, ... 
 				(this.XY(2) + gravitationalBody.XY(2)) / 2 ...
 				];
-			
-			% "Kill" the other body
-			gravitationalBody.IsAlive = false;
 		end
 		
 		function Draw(this, graphAxes)
