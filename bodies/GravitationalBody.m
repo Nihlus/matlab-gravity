@@ -61,7 +61,11 @@ classdef GravitationalBody < handle
 			randColour = rand(1, 3);
 			
 			body.RGB = randColour;
-		end
+        end
+        
+        function result = lerp(v0, v1, t)
+            result = (1-t)*v0+t*v1;  
+        end
 	end
 	
 	methods
@@ -163,7 +167,7 @@ classdef GravitationalBody < handle
 			% SIMULATEFORCES Simulate the calculated forces over a period of time
 			%	SIMULATEFORCES(deltaTime, seconds) Applies the forces over a period of
 			%	s seconds, adjusted by deltaTime.
-			
+            
 			if (~isnumeric(deltaTime))
 				fprintf('Invalid input. "deltaTime" must be a numeric value strictly more than 0.');
 			end
@@ -174,15 +178,20 @@ classdef GravitationalBody < handle
 			
 			if (seconds <= 0)
 				fprintf('Invalid input. "Seconds" must be strictly more than 0.');
-			end
-			
+            end
+            	
 			% Apply the calculated forces on the body to the following
 			% variables:
 			
 			% this.XY
-		end
-		
-		
+            
+            xt = this.XY(1);
+            yt = this.XY(2);
+            alpha = (this.Acceleration/seconds)*deltaTime;
+            this.XY(1) = GravitationalBody.lerp(xt, this.XYDirection(1), alpha);
+            this.XY(2) = GravitationalBody.lerp(yt, this.XYDirection(2), alpha);
+        end
+        
 		% GitHub Issue #1
 		function AbsorbBody(this, gravitationalBody)
 			% ABSORB Absorbs the input body, combining its mass with the
