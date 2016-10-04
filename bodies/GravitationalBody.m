@@ -210,14 +210,16 @@ classdef GravitationalBody < handle
 			
 			% Fixed points have no movement
 			if (~this.IsFixedPoint)
-				% Compute and apply the average positions
-				this.XY = [ ...
-					(this.XY(1) + gravitationalBody.XY(1)) / 2, ... 
-					(this.XY(2) + gravitationalBody.XY(2)) / 2 ...
-					];
-
-				% 
-				this.AccelerationVector = (this.AccelerationVector + gravitationalBody.AccelerationVector) / 2;
+				% Compute and apply the average resultant force
+				forceBodyOne = this.AccelerationVector * this.CalculateMass();
+				forceBodyTwo = gravitationalBody.AccelerationVector * gravitationalBody.CalculateMass();
+				
+				this.AccelerationVector = (forceBodyOne + forceBodyTwo) / this.CalculateMass();
+				
+				forceBodyOne = this.VelocityVector * this.CalculateMass();
+				forceBodyTwo = gravitationalBody.VelocityVector * gravitationalBody.CalculateMass();
+				
+				this.VelocityVector = (forceBodyOne + forceBodyTwo) / this.CalculateMass();
 			end
 			
 			

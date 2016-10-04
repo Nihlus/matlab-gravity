@@ -118,7 +118,12 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 				if (otherGravitationalBody.IsFixedPoint)
 					otherGravitationalBody.AbsorbBody(gravitationalBody);
 				else
-					gravitationalBody.AbsorbBody(otherGravitationalBody);
+					if (gravitationalBody.CalculateMass() > otherGravitationalBody.CalculateMass())
+						gravitationalBody.AbsorbBody(otherGravitationalBody);
+					else
+						otherGravitationalBody.AbsorbBody(gravitationalBody);
+					end
+					
 				end
 			else
 				% Compute the forces
