@@ -16,7 +16,7 @@ function main()
 		
 		withGreatAttractor = false;
 		
-		timeStep = 60;
+		timeStep = 120;
 		
 		rng('shuffle', 'simdTwister')
 	else
@@ -61,7 +61,7 @@ function main()
 	
 	while (size(gravitationalBodies,  2) > 1)
 		% Run one frame of the simulation and store the time taken to 
-		% perform that simulation.
+		% perform that simulation (in milliseconds).
 		[lastFrameTime, gravitationalBodies] = RunFrame(gravitationalBodies, lastFrameTime, timeStep, graphAxes);
 		lastFrameTime = lastFrameTime * 1000;
 	end
@@ -126,7 +126,7 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 		gravitationalBody = remainingBodies(j);
 
 		if (~gravitationalBody.IsAlive)
-			continue
+			continue;
 		end	
 		
 		gravitationalBody.SimulateForces(deltaTime, seconds);
@@ -138,7 +138,7 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 		gravitationalBody = remainingBodies(i);
 		
 		if (~gravitationalBody.IsAlive)
-			continue
+			continue;
 		end
 
 		gravitationalBody.Draw(graphAxes);

@@ -92,7 +92,7 @@ classdef GravitationalBody < handle
 			
 			if (~isa(gravitationalBody, 'GravitationalBody'))
 				fprintf('Invalid input object to ApplyForces - must be another gravitational body.');
-				return
+				return;
 			end
 			
 			collisionThreshold = this.Radius + gravitationalBody.Radius;
@@ -113,7 +113,7 @@ classdef GravitationalBody < handle
 			
 			if (~isa(gravitationalBody, 'GravitationalBody'))
 				fprintf('Invalid input object to ApplyForces - must be another gravitational body.');
-				return
+				return;
 			end
 			
 			distance = sqrt ( ...
@@ -149,7 +149,7 @@ classdef GravitationalBody < handle
 			
 			if (~isa(gravitationalBody, 'GravitationalBody'))
 				fprintf('Invalid input object to ApplyForces - must be another gravitational body.');
-				return
+				return;
 			end
 			
 			% Calculate the force the input body exerts on this body
@@ -224,11 +224,20 @@ classdef GravitationalBody < handle
 		end
 		
 		function Kill(this)
+			% KILL Kills the body, removing it from the simulation.
+			%	KILL(this) Kills this body, settings its alive flag to 
+			%	false and
+			%	deleting its graphical object.
+			
 			this.IsAlive = false;
 			delete(this.GraphicalObject);
 		end
 		
 		function Draw(this, graphAxes)
+			% DRAW Draws the body in the provided axes.
+			%	DRAW(this, graphAxes) Draws a circular representation of this body 
+			%	in the provided axes.
+			
 			xpos = this.XY(1) - this.Radius;
 			ypos = this.XY(2) - this.Radius;
 			side = this.Radius * 2;
