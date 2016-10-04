@@ -141,7 +141,7 @@ classdef GravitationalBody < handle
 			% Apply this force cumulatively onto the following variables:
 			% this.Acceleration
 			% this.XYDirection
-            G = 6.67384;
+            G = 6.67384*(10^(-11));
             
 			%{
             if (this.XY(1) > gravitationalBody.XY(1))
@@ -160,7 +160,7 @@ classdef GravitationalBody < handle
                 Fy = 0;
             end
 			%}
-            F = (G * this.CalculateMass() * 10 * gravitationalBody.CalculateMass() * 10) / this.DistanceTo(gravitationalBody)^2;
+            F = G*(this.CalculateMass() * 10 * gravitationalBody.CalculateMass() * 10) / this.DistanceTo(gravitationalBody)^2;
 			v = (gravitationalBody.XY - this.XY);
 			u = v / norm(v);
 			
