@@ -18,6 +18,8 @@ classdef GravitationalBody < handle
 		% Forces
 		XYChange = [0, 0]
 		Acceleration = 0
+		
+		GraphicalObject
 	end
 	
 	methods (Static)
@@ -158,7 +160,7 @@ classdef GravitationalBody < handle
                 Fy = 0;
             end
 			%}
-            F = (G * this.CalculateMass() * gravitationalBody.CalculateMass()) / this.DistanceTo(gravitationalBody)^2;
+            F = (G * this.CalculateMass() * 10 * gravitationalBody.CalculateMass() * 10) / this.DistanceTo(gravitationalBody)^2;
 			v = (gravitationalBody.XY - this.XY);
 			u = v / norm(v);
 			
@@ -210,21 +212,22 @@ classdef GravitationalBody < handle
             this.XY(2) = newY;
 			%}
 			
-			Pp = this.XY + this.XYChange;
-			F = sqrt ( ...
-				(Pp(1) - this.XY(1))^2 ...
+			pointWhichBodyIsApproaching = this.XY + this.XYChange;
+			Force = sqrt ( ...
+				(pointWhichBodyIsApproaching(1) - this.XY(1))^2 ...
 				+ ...
-				(Pp(2) - this.XY(2))^2 ...
+				(pointWhichBodyIsApproaching(2) - this.XY(2))^2 ...
 				);
 			
-			this.Acceleration = F / this.CalculateMass();
+			this.Acceleration = Force / this.CalculateMass();
 			
-			xt = this.XY(1);
-            yt = this.XY(2);
+			
+			originalX = this.XY(1);
+            originalY = this.XY(2);
             alpha = (this.Acceleration * seconds^2) * deltaTime;
 			
-			newX = GravitationalBody.lerp(xt, Pp(1), alpha);
-			newY = GravitationalBody.lerp(yt, Pp(2), alpha);
+			newX = GravitationalBody.lerp(originalX, pointWhichBodyIsApproaching(1), alpha);
+			newY = GravitationalBody.lerp(originalY, pointWhichBodyIsApproaching(2), alpha);
 			
             this.XY(1) = newX;
             this.XY(2) = newY;
@@ -256,7 +259,9 @@ classdef GravitationalBody < handle
 			ypos = this.XY(2) - this.Radius;
 			side = this.Radius * 2;
 			
-				rectangle(graphAxes, ...
+			delete(this.GraphicalObject);
+			
+			this.GraphicalObject = rectangle(graphAxes, ...
 					'Position', [xpos, ypos, side, side], ...
 					'Curvature', [1, 1], ...
 					'FaceColor', this.RGB);

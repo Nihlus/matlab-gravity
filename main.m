@@ -14,7 +14,7 @@ function main()
 		minMaxY = [0, 100];
 		minMaxR = [1, 2];
 		
-		timeStep = 0.01;
+		timeStep = 0.001;
 		
 		rng('shuffle', 'simdTwister')
 	else
@@ -58,27 +58,28 @@ end
 function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes)
 	tic
 	
+	remainingBodies = gravitationalBodies;
+	
 	% Dump the dead bodies from last frame
+	deadIndices = [];
+	for i = 1 : size(remainingBodies, 2)
+		gravitationalBody = remainingBodies(i);
+		if (~gravitationalBody.IsAlive)
+			deadIndices = [deadIndices, i];
+		end
+	end
 	
-	%deadIndices = [];
-	%for i = 1 : size(gravitationalBodies, 2)
-%		gravitationalBody = gravitationalBodies(i);
-%		if (~gravitationalBody.IsAlive)
-%			deadIndices = [deadIndices, i];
-%		end
-%	end
-	
-	%if (size(deadIndices) > 0)
+	if (size(deadIndices) > 0)
 		% Delete the bodies from the array
-	%	gravitationalBodies(deadIndices) = [];
-	%end
+		remainingBodies(deadIndices) = [];
+	end
 	
 	% for all bodies
-	for i = 1 : size(gravitationalBodies, 2)
-		gravitationalBody = gravitationalBodies(i);
+	for i = 1 : size(remainingBodies, 2)
+		gravitationalBody = remainingBodies(i);
 		
 		if (~gravitationalBody.IsAlive)
-			continue
+			continue;
 		end
 
 		% Zero out the force from last frame
@@ -86,8 +87,8 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 		gravitationalBody.Acceleration = 0;
 		
 		% Check for collisions
-		for j = 1 : size(gravitationalBodies, 2)
-			otherGravitationalBody = gravitationalBodies(j);
+		for j = 1 : size(remainingBodies, 2)
+			otherGravitationalBody = remainingBodies(j);
 
 			% Skip itself
 			if (j == i)
@@ -95,7 +96,7 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 			end
 
 			if (~otherGravitationalBody.IsAlive)
-				continue
+				continue;
 			end
 			
 			isColliding = gravitationalBody.IsCollidingWith(otherGravitationalBody);
@@ -109,8 +110,8 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 	end
 
 	% Simulate all forces
-	for j = 1 : size(gravitationalBodies, 2)
-		gravitationalBody = gravitationalBodies(j);
+	for j = 1 : size(remainingBodies, 2)
+		gravitationalBody = remainingBodies(j);
 
 		if (~gravitationalBody.IsAlive)
 			continue
@@ -121,8 +122,8 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 	
 	% Finally, draw all bodies
 	hold(graphAxes, 'off') % Clear the previous frame (swap the buffers, essentially)
-	for i = 1 : size(gravitationalBodies, 2)
-		gravitationalBody = gravitationalBodies(i);
+	for i = 1 : size(remainingBodies, 2)
+		gravitationalBody = remainingBodies(i);
 		
 		if (~gravitationalBody.IsAlive)
 			continue
@@ -139,6 +140,6 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 	drawnow;
 	pause(0.01);
 	
-	remainingBodies = gravitationalBodies;
+	%remainingBodies = gravitationalBodies;
 	timeTaken = toc;
 end
