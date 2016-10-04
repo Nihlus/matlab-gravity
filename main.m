@@ -9,12 +9,14 @@ function main()
 	% Setup - simulation parameters
 	isDebug = true;
 	if (isDebug)
-		bodyCount = 10;
-		minMaxX = [0, 100];
-		minMaxY = [0, 100];
-		minMaxR = [1, 2];
+		bodyCount = 100;
+		minMaxX = [0, 1000];
+		minMaxY = [0, 1000];
+		minMaxR = [2, 8];
 		
-		timeStep = 0.001;
+		withGreatAttractor = false;
+		
+		timeStep = 60;
 		
 		rng('shuffle', 'simdTwister')
 	else
@@ -23,7 +25,7 @@ function main()
 		minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax]: \n$: ');
 		minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax]: \n$: ');
 		
-		timeStep = input('Enter the desired time step of the simulation: \n$: ');
+		timeStep = input('Enter the desired time step of the simulation (in milliseconds): \n$: ');
 		
 		rng(input('Enter a seed for the random number generator: \n'), 'simdTwister')
 		
@@ -39,12 +41,22 @@ function main()
 	axis(graphAxes, [minMaxX, minMaxY]);
 	grid(graphAxes, 'on');
 
-	% Setup - body generation
-	gravitationalBodies = GravitationalBody.empty(bodyCount, 0);
-	for i = 1 : bodyCount
-		gravitationalBodies(i) = GravitationalBody.CreateRandomBody(minMaxX, minMaxY, minMaxR);
+	% Setup - body generation, no attractor
+	if (withGreatAttractor)
+		gravitationalBodies = GravitationalBody.empty(bodyCount + 1, 0);
+		for i = 1 : bodyCount
+			gravitationalBodies(i) = GravitationalBody.CreateRandomBody(minMaxX, minMaxY, minMaxR);
+		end
+		
+		gravitationalBodies(bodyCount + 1) = GravitationalBody([minMaxX(2) / 2, minMaxY(2) / 2], minMaxR(2) * 2, [1, 1, 0], true);
+	else
+		gravitationalBodies = GravitationalBody.empty(bodyCount, 0);
+		for i = 1 : bodyCount
+			gravitationalBodies(i) = GravitationalBody.CreateRandomBody(minMaxX, minMaxY, minMaxR);
+		end
 	end
 	
+		
 	% Run simulation
 	
 	while (size(gravitationalBodies,  2) > 1)
@@ -82,10 +94,6 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 			continue;
 		end
 
-		% Zero out the force from last frame
-		gravitationalBody.XYChange = [0, 0];
-		gravitationalBody.Acceleration = 0;
-		
 		% Check for collisions
 		for j = 1 : size(remainingBodies, 2)
 			otherGravitationalBody = remainingBodies(j);
@@ -101,7 +109,11 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 			
 			isColliding = gravitationalBody.IsCollidingWith(otherGravitationalBody);
 			if (isColliding)
-				gravitationalBody.AbsorbBody(otherGravitationalBody);
+				if (otherGravitationalBody.IsFixedPoint)
+					otherGravitationalBody.AbsorbBody(gravitationalBody);
+				else
+					gravitationalBody.AbsorbBody(otherGravitationalBody);
+				end
 			else
 				% Compute the forces
 				gravitationalBody.ComputeForces(otherGravitationalBody);

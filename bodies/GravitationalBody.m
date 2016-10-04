@@ -16,10 +16,12 @@ classdef GravitationalBody < handle
 		RGB = [1, 1, 1]
 		
 		% Forces
-		XYChange = [0, 0]
-		Acceleration = 0
+		VelocityVector = [0, 0]
+		AccelerationVector = [0, 0]
 		
 		GraphicalObject
+		
+		IsFixedPoint
 	end
 	
 	methods (Static)
@@ -47,24 +49,19 @@ classdef GravitationalBody < handle
 				fprintf('The parameter "minMaxR" must be a 2-element vector.');
 			end
 			
-			% Initialize a new body
-			body = GravitationalBody();
-			
+					
 			% Create two random X and Y values
 			randX = minMaxX(1) + (minMaxX(2) - minMaxX(1)).*rand(1,1);
 			randY = minMaxY(1) + (minMaxY(2) - minMaxY(1)).*rand(1,1);
-			
-			body.XY = [randX, randY];
-			
+						
 			% Create a random radius
 			randR = (minMaxR(2) - minMaxR(1)).*rand(1,1) + minMaxR(1);
-			
-			body.Radius = randR;
-			
+						
 			% Create a random colour
 			randColour = rand(1, 3);
-			
-			body.RGB = randColour;
+				
+			% Initialize a new body
+			body = GravitationalBody([randX, randY], randR, randColour, false);
         end
         
         function result = lerp(v0, v1, t)
@@ -73,6 +70,20 @@ classdef GravitationalBody < handle
 	end
 	
 	methods
+		function obj = GravitationalBody(initialXY, initialRadius, initialRGB, isFixedPoint)
+			% GRAVITATIONALBODY Creates a new instance of the
+			% GravitationalBody class.
+			%	GRAVITATIONALBODY(this, initialXY, initialRadius, initialRGB, isFixedPoint)
+			%	Creates a new instance of the GravitationalBody class using
+			%	the supplied initial values, and whether or not the
+			%	instance is a fixed point in the simulation.
+			
+			obj.XY = initialXY;
+			obj.Radius = initialRadius;
+			obj.RGB = initialRGB;
+			obj.IsFixedPoint = isFixedPoint;
+		end
+		
 		function isColliding = IsCollidingWith(this, gravitationalBody)
 			% ISCOLLIDINGWITH Determines whether or not this body is 
 			%	colliding with the provided body.
@@ -131,6 +142,11 @@ classdef GravitationalBody < handle
 			%	body, and cumulatively applies them to this body's stored
 			%	forces.
 			
+			% Fixed points have no need to calculate forces on themselves
+			if (this.IsFixedPoint)
+				return;
+			end
+			
 			if (~isa(gravitationalBody, 'GravitationalBody'))
 				fprintf('Invalid input object to ApplyForces - must be another gravitational body.');
 				return
@@ -141,117 +157,75 @@ classdef GravitationalBody < handle
 			% Apply this force cumulatively onto the following variables:
 			% this.Acceleration
 			% this.XYDirection
-            G = 6.67384;
+            G = 6.67408e-11;
             
-			%{
-            if (this.XY(1) > gravitationalBody.XY(1))
-                Fx = -((G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (this.XY(1) - gravitationalBody.XY(1)) ^ 2 );
-            elseif (this.XY(1) < gravitationalBody.XY(1))
-                Fx = ((G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (gravitationalBody.XY(1) - this.XY(1)) ^ 2 );
-            else
-                Fx = 0;
-            end
-            
-            if (this.XY(2) > gravitationalBody.XY(2))
-                Fy = -((G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (this.XY(2) - gravitationalBody.XY(2)) ^ 2 );
-            elseif (this.XY(2) < gravitationalBody.XY(2))
-                Fy = ((G * this.CalculateMass() * gravitationalBody.CalculateMass()) / (gravitationalBody.XY(2) - this.XY(2)) ^ 2 );
-            else
-                Fy = 0;
-            end
-			%}
-            F = (G * this.CalculateMass() * 10 * gravitationalBody.CalculateMass() * 10) / this.DistanceTo(gravitationalBody)^2;
-			v = (gravitationalBody.XY - this.XY);
-			u = v / norm(v);
+			distance = this.DistanceTo(gravitationalBody);
+            force = G * ((this.CalculateMass() * gravitationalBody.CalculateMass()) / distance^2);
+			forceVector = force * (this.XY - gravitationalBody.XY) / distance; 
 			
-			Pd = this.XY + (F * u);
-			
-			this.XYChange = Pd - this.XY;
-			
-            % this.XYDirection(1) = this.XYDirection(1) + Fx;
-            % this.XYDirection(2) = this.XYDirection(2) + Fy;
-            % this.Acceleration = sqrt( this.XYDirection(1) ^ 2 + this.XYDirection(2) ^ 2 );
-				
-			% acceleration
-			% speed
-			% 
+			this.AccelerationVector = this.AccelerationVector - (forceVector / this.CalculateMass());
 		end
 		
 		% Github Issue #3
-		function SimulateForces(this, deltaTime, seconds)
+		function SimulateForces(this, deltaTime, timeStep)
 			% SIMULATEFORCES Simulate the calculated forces over a period of time
 			%	SIMULATEFORCES(deltaTime, seconds) Applies the forces over a period of
 			%	s seconds, adjusted by deltaTime.
+			
+			% Fixed points have no need to simulate forces on themselves
+			if (this.IsFixedPoint)
+				return;
+			end
             
 			if (~isnumeric(deltaTime))
 				fprintf('Invalid input. "deltaTime" must be a numeric value strictly more than 0.');
 			end
 			
-			if (~isnumeric(seconds))
+			if (~isnumeric(timeStep))
 				fprintf('Invalid input. "Seconds" must be a numeric value strictly more than 0.');
 			end
 			
-			if (seconds <= 0)
+			if (timeStep <= 0)
 				fprintf('Invalid input. "Seconds" must be strictly more than 0.');
 			end
             	
-			% Apply the calculated forces on the body to the following
-			% variables:
+			% Apply the calculated forces on the body 
 			
-			% this.XY
-            
-			%{
-            xt = this.XY(1);
-            yt = this.XY(2);
-            alpha = (this.Acceleration * seconds) * deltaTime;
-			
-			newX = GravitationalBody.lerp(xt, this.XYChange(1), alpha);
-			newY = GravitationalBody.lerp(yt, this.XYChange(2), alpha);
-			
-            this.XY(1) = newX;
-            this.XY(2) = newY;
-			%}
-			
-			pointWhichBodyIsApproaching = this.XY + this.XYChange;
-			Force = sqrt ( ...
-				(pointWhichBodyIsApproaching(1) - this.XY(1))^2 ...
-				+ ...
-				(pointWhichBodyIsApproaching(2) - this.XY(2))^2 ...
-				);
-			
-			this.Acceleration = Force / this.CalculateMass();
-			
-			
-			originalX = this.XY(1);
-            originalY = this.XY(2);
-            alpha = (this.Acceleration * seconds^2) * deltaTime;
-			
-			newX = GravitationalBody.lerp(originalX, pointWhichBodyIsApproaching(1), alpha);
-			newY = GravitationalBody.lerp(originalY, pointWhichBodyIsApproaching(2), alpha);
-			
-            this.XY(1) = newX;
-            this.XY(2) = newY;
+			this.VelocityVector = this.VelocityVector + ((deltaTime * timeStep) * this.AccelerationVector);
+			this.XY = this.XY + ((deltaTime * timeStep) * this.VelocityVector);
         end
         
 		% GitHub Issue #1
 		function AbsorbBody(this, gravitationalBody)
-			% ABSORB Absorbs the input body, combining its mass with the
+			% ABSORBBODY Absorbs the input body, combining its mass with the
 			% mass of this body.
-			%	ABSORB(seconds) Absorb the input body. The masses of the
+			%	ABSORBBODY(seconds) Absorb the input body. The masses of the
 			%	input body and this body are added, and their positions
 			%	averaged between each other.
 			
 			% Combine the masses
 			this.Radius = sqrt((gravitationalBody.Radius^2*pi + this.Radius^2*pi) / pi);
 			
-			% Compute and apply the average positions
-			this.XY = [ ...
-				(this.XY(1) + gravitationalBody.XY(1)) / 2, ... 
-				(this.XY(2) + gravitationalBody.XY(2)) / 2 ...
-				];
+			% Fixed points have no movement
+			if (~this.IsFixedPoint)
+				% Compute and apply the average positions
+				this.XY = [ ...
+					(this.XY(1) + gravitationalBody.XY(1)) / 2, ... 
+					(this.XY(2) + gravitationalBody.XY(2)) / 2 ...
+					];
+
+				% 
+				this.AccelerationVector = (this.AccelerationVector + gravitationalBody.AccelerationVector) / 2;
+			end
 			
-			% "Kill" the other body
-			gravitationalBody.IsAlive = false;
+			
+			% "Kill" the other body, removing it from the simulation
+			gravitationalBody.Kill();
+		end
+		
+		function Kill(this)
+			this.IsAlive = false;
+			delete(this.GraphicalObject);
 		end
 		
 		function Draw(this, graphAxes)
