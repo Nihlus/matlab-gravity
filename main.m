@@ -14,7 +14,7 @@ function main()
 		minMaxY = [0, 1000];
 		minMaxR = [2, 8];
 		
-		withGreatAttractor = false;
+		withGreatAttractor = true;
 		
 		timeStep = 120;
 		
