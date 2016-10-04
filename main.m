@@ -3,7 +3,7 @@ function main()
 	minMaxX = [0 0];
 	minMaxY = [0 0];
 	minMaxR = [0 0];
-	
+	withGreatAttractor = false;
 	timeStep = 0;
 
 	% Setup - simulation parameters
@@ -21,13 +21,19 @@ function main()
 		rng('shuffle', 'simdTwister')
 	else
 		bodyCount = input('Enter the desired number of simulated bodies: \n$: ');
-		minMaxX = input('Enter the minimum and maxiumum X values as a vector in the format [XMin, XMax]: \n$: ');
-		minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax]: \n$: ');
-		minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax]: \n$: ');
+		minMaxX = input('Enter the minimum and maxiumum X values as a vector in the format [XMin, XMax] \n$: ');
+		minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax] \n$: ');
+		minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax] \n$: ');
+		withGreatAttractorInput = input('Should a fixed point be included in the simulation? \n(Effectively, this will follow a large body in a field of other smaller bodies) [y/n] \n$: ', 's');
+	
+		if (lower(withGreatAttractorInput) == 'y')
+			withGreatAttractor = true;
+		end
+	
 		
 		timeStep = input('Enter the desired time step of the simulation (in milliseconds): \n$: ');
 		
-		rng(input('Enter a seed for the random number generator: \n'), 'simdTwister')
+		rng(input('Enter a non-negative seed value for the random number generator: \n'), 'simdTwister')
 		
 		input('Parameters loaded. Press enter to begin.');
 	end

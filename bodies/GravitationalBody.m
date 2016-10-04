@@ -19,8 +19,10 @@ classdef GravitationalBody < handle
 		VelocityVector = [0, 0]
 		AccelerationVector = [0, 0]
 		
+		% The graphical object on the simulation axes
 		GraphicalObject
 		
+		% Whether or not this body is a fixed point in the simulation
 		IsFixedPoint
 	end
 	
