@@ -5,7 +5,7 @@
 
 	Author(s):
 		Jarl Gullberg (199706013175) <jarl.gullberg@gmail.com>
-		Karl Brorsson () <>
+		Karl Brorsson (199406189036) <brorssonkarl@gmail.com>
 		Alexander Johansson () <>
 
 	Due to constraints, the main loop has been placed in the 
