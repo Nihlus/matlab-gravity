@@ -6,7 +6,7 @@
 	Author(s):
 		Jarl Gullberg (199706013175) <jarl.gullberg@gmail.com>
 		Karl Brorsson (199406189036) <brorssonkarl@gmail.com>
-		Alexander Johansson () <>
+		Alexander Johansson (199701114499) <alexander.johansson97@hotmail.se>
 
 	Due to constraints, the main loop has been placed in the 
 	class declaration as a static function. In order to run the 
