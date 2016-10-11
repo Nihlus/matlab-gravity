@@ -1,10 +1,6 @@
 function main()
-	bodyCount = 0;
-	minMaxX = [0 0];
-	minMaxY = [0 0];
-	minMaxR = [0 0];
 	
-	timeStep = 0;
+	
 
 	% Setup - simulation parameters
 	isDebug = true;
