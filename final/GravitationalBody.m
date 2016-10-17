@@ -147,6 +147,7 @@ classdef GravitationalBody < handle
 				lastFrameTime = lastFrameTime * 1000;
 			end
 		end
+		
 		function Simulate()
 			bodyCount = 0;
 			minMaxX = [0 0];
