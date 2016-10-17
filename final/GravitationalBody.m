@@ -14,6 +14,16 @@
 
 	GravitationalBody.Simulate()
 
+    Any required parameters will be collected from the user. 
+
+    Due to a number of factors, the simulation may take a very long time to
+    complete - objects are commonly slingshotted away from the visible
+    screen by gravitational forces, but remain in the simulation for
+    correctness. These objects will - eventually - coalesce into a single
+    point, but it may not be visible in the end. Therefore, a "great
+    attractor" can be generated in the center of the visible area, which
+    acts as a fixed point in the simulation. One can think of this as a sun
+    or planet surrounded by asteroids, which the simulation follows.
 %}
 
 classdef GravitationalBody < handle
@@ -332,12 +342,13 @@ classdef GravitationalBody < handle
 		
 		function mass = CalculateMass(this)
 			% COMPUTEMASS Calculates the absolute mass of this body, using
-			% the radius. In this 2D simulation, the mass is represented by
-			% the area of the body.
+			% the radius.
 			%	mass = COMPUTEMASS() Calculates the mass of the body using
-			%	the area function of a circle.
+			%	the area function of a circle. In this 2D simulation, 
+            %   the mass is represented by the area of the body, multiplied
+            %   by the average density of a rocky body such as the Earth.
 			
-			mass = this.Radius^(2) * pi;
+			mass = this.Radius^(2) * pi * 5.5;
 		end
 		
 		% Github Issue #2
