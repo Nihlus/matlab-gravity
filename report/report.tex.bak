@@ -90,13 +90,13 @@ $F = G \cdot \frac{this.m \cdot other.m}{d^{2}}$
 \section{Method}
 It was clear from the beginning that, within the confines of the excercise, the bulk of the simulation would be done in a series of conditional loops wherein each object calculated the effect of each other body upon itself. Additonally, we chose to implement the simulation using MATLAB's capacity for object-oriented programming which lends itself well to a simulation with a large (and variable) number of entities (in our case, the gravitational bodies) with identical properties but variable data.
 
+\subsection{Program Structure}
 The general structure of the program follows the basic skeleton outlined in the theory, as seen in the adjacent diagram. Before the main loop, a setup phase creates an array of gravitational bodies (hereafter referred to as \emph{instances}) using constraint values collected from the user or defined by passing parameters to the simulation function.
 
-Once past the setup stage, our main loop (in this case, a while loop) consumes the array of generated instances, which it performs simulations upon. This loop continues until only one body remains in the simulation. 
+Once past the setup stage, our main loop (in this case, a while loop) consumes the array of generated instances, which it performs simulations upon. This loop continues until only one body remains in the simulation. Any collisions between bodies cause them to merge into one.
 
-\subsection{Program Structure}
 \begin{wrapfigure}{r}{0.5\textwidth}
-	\vspace{-12pt}
+	\vspace{-2pt}
 	\begin{center}
     	\includegraphics[scale=0.40]{MainLoopDiagram}
     \end{center}
@@ -106,9 +106,9 @@ Once past the setup stage, our main loop (in this case, a while loop) consumes t
 The main loop is divided into a short conditional block which governs the termination of the simulation, and a frame function.
 This frame function performs four distinct phases in the simulation - cleanup, compute, simulate and draw. The cleanup phase is one of two optimizations of the simulation, which alleviates performance problems for large computations. During the cleanup phase, the program goes through the provided list of instances, checks for any instances which have merged with others (as indicated by the \verb|IsAlive| property being set to false), and removes these from processing.
 
-After this phase, the simulation enters the compute phase where the acceleration vector of each body is determined. These values are then passed on to the simulate phase. The mathematical operations of these phases are  explained in more detail in \ref{gravityComputeInfo}. 
+After this phase, the simulation enters the compute phase where the acceleration vector of each body is determined. These values are then passed on to the simulate phase. The mathematical operations of these phases are  explained in more detail in \ref{gravityComputeInfo}.
 
-The simulate phase takes the previous values and applies them over a small amount of time. The smaller this step is, the more accurate the simulation is. However, it takes a longer time and requires more processing power. In its most basic form, this simulation step is subject to changes in the hardware it runs on. If left unchecked, the simulation will finish sooner and with more steps on faster processors, effectively altering the end result. Any collisions between bodies during the simulation phase cause them to merge into one, and adopt a new common position weighted by the mass of the larger body.
+The simulate phase takes the previous values and applies them over a small amount of time. The smaller this step is, the more accurate the simulation is. However, it takes a longer time and requires more processing power. In its most basic form, this simulation step is subject to changes in the hardware it runs on. If left unchecked, the simulation will finish sooner and with more steps on faster processors, effectively altering the end result. 
 
 In order to combat this (and maintain a consistent result across different types of hardware), the time taken to complete each frame is recorded and used to modify the simulation length of the following one. This is a simple yet effective implementation of $\delta t$ frame-time, a technique most often seen in games and realtime rendering.
 
