@@ -1,0 +1,95 @@
+\documentclass[11pt]{article}
+%Gummi|065|=)
+\title{\textbf{Gravitational N-body Simulation in MATLAB}}
+\author{Alexander Johansson\\
+		Jarl Gullberg\\
+		Karl Brorsson\\
+		\\
+		The Masters Programme in Spaceflight Engineering\\
+		Luleå University of Technology\\SE-971 87 Luleå, Sweden}
+\date{\today}
+
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{Images/}
+\usepackage[backend=biber,style=numeric,bibencoding=utf8]{biblatex}
+\addbibresource{bibliography.bib}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+N-body simulations are a classic computational problem for physicists and programmers. The simulation of 
+an arbitrary number of bodies in a gravitational system is exponentially more taxing for the computational 
+hardware it runs on as the number of bodies grow, and the accuracy of the simulation suffers if the simulation
+stepping is too low.
+
+This report describes an implementation of a simple n-body simulation on a 2D plane written in MATLAB, which 
+implements some common optimizations of realtime simulations. Additionally, the simulation exploits the 
+object-oriented capabilites of MATLAB to improve code organization and implementation clarity.
+\end{abstract}
+
+\pagebreak
+\tableofcontents
+
+\pagebreak
+%------%
+\section{Preface}
+
+%------%
+\section{Introduction}
+
+%------%
+\section{Theory}
+The basic principle of a simulation is rather simple - a set of logical rules which determine how the 
+simulation will progress, and a set of mathematical theories (in the form of implemented formulae) which
+serve to explore the intended science of the simulation.
+
+Each works in tandem to, over time, create a simulation of available data as reasonable close to the real 
+world as possible.
+\subsection{Logic Flow}
+In every turing-complete programming language, there exists a set of conditional and logical constructs
+which can be used to direct the path of the program through the source code (colloquially referred to as \emph{control flow statements}). 
+
+MATLAB, which falls inside this set of languages, defines every required statement. A complete study of each is, however, beyond the scope of this report, and it is sufficient to mention their use.
+
+For almost every simulation, the application of these statements and constructs follows a very similar structure. There is a main \emph{loop} which drives the simulation forward one batch of calculations at a time, and a set of control flow statements inside it which determine what specific calculations are made.
+
+The shell of a simulation might look something like this:
+\begin{lstlisting}[language=Matlab, tabsize=4, numbers=left, frame=shadowbox]
+stopCondition = false;
+while(!stopCondition)
+	computationFinished = doComputation();
+	
+	if (computationFinished)
+		stopCondition = true;
+	end
+end
+\end{lstlisting}
+This simulation will run indefinitely until the computation (whatever it might be) is finished, as indicated by
+the result of the \verb|doComputation| function, which in turn flips the \verb|stopCondition| and terminates the 
+simulation. This is, of course, a simplifed example with exaggarated control flow for clarity.
+\subsection{Gravitational Theory}
+$G = 6.67408^{-11}$\\
+$d = \sqrt{(other.X - this.X)^{2} + (other.Y - this.Y)^{2}}$\\
+$m = this.Radius^{2} \cdot \pi \cdot 5.5$\\
+$F = G \cdot \frac{this.m \cdot other.m}{d^{2}}$
+
+%------%
+\section{Method}
+It was clear from the beginning that, within the confines of the excercise, the bulk of the simulation would be done in a series of conditional loops wherein each object calculated the effect of each other body upon itself.
+\subsection{Program Structure}
+\subsection{Gravitational Computation}
+
+%------%
+\section{Results}
+
+
+%------%
+\section{Discussion}
+
+\printbibliography
+
+\end{document}

@@ -10,11 +10,24 @@
 
 	Due to constraints, the main loop has been placed in the 
 	class declaration as a static function. In order to run the 
-	simulation, run the following command without parameters:
+	simulation, run the following static function without parameters:
 
 	GravitationalBody.Simulate()
 
     Any required parameters will be collected from the user. 
+
+
+	A simpler simulation with standard values can be started using the 
+	following static function:
+
+	GravitationalBody.SimulateSimple(bodyCount)
+
+
+	A parameterized static function is also available for use within
+	other code, in the following format:
+	
+	GravitationalBody.SimulateParameterized(bodyCount, minMaxX, minMaxY, minMaxR, withGreatAttractor, timeStep)
+
 
     Due to a number of factors, the simulation may take a very long time to
     complete - objects are commonly slingshotted away from the visible
@@ -99,6 +112,16 @@ classdef GravitationalBody < handle
 		end
 		
 		function SimulateSimple(bodyCount)
+			% SIMULATESIMPLE(bodyCount) Starts a simple simulation with the
+			% specified number of bodies.
+			%
+			% This function starts a simple simulation with the specified 
+			% number of bodies using a set of standard settings (a surface
+			% of 1000x1000, min/max radii of 2 and 8 and a timestep of 120)
+			%
+			% PARAM bodyCount An unsigned integer, specifying the number of
+			% bodies to create in the simulation.
+			
 			
 			minMaxX = [0, 1000];
 			minMaxY = [0, 1000];
@@ -184,7 +207,7 @@ classdef GravitationalBody < handle
 				timeStep = input('Enter the desired time step of the simulation (in milliseconds): \n$: ');
 
 				%rng(input('Enter a non-negative seed value for the random number generator: \n'), 'simdTwister')
-				rng('shuffle', 'simdTwister')
+				rng('shuffle');
 
 				input('Parameters loaded. Press enter to begin.');
 			end
@@ -465,7 +488,7 @@ classdef GravitationalBody < handle
 			
 			delete(this.GraphicalObject);
 			
-			this.GraphicalObject = rectangle(graphAxes, ...
+			this.GraphicalObject = rectangle(...
 					'Position', [xpos, ypos, side, side], ...
 					'Curvature', [1, 1], ...
 					'FaceColor', this.RGB);
