@@ -1,10 +1,15 @@
 function main()
+<<<<<<< HEAD
+	
+	
+=======
 	bodyCount = 0;
 	minMaxX = [0 0];
 	minMaxY = [0 0];
 	minMaxR = [0 0];
 	withGreatAttractor = false;
 	timeStep = 0;
+>>>>>>> d2377d30a93858f7c731797b0366ac428b0ceb05
 
 	% Setup - simulation parameters
 	isDebug = true;
