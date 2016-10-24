@@ -80,10 +80,24 @@ simulation. This is, of course, a simplifed example with exaggarated control flo
 
 \subsection{Gravitational Theory}
 \todo{Expand gravitational theory section with explanations}
-$G = 6.67408^{-11}$\\
-$d = \sqrt{(other.X - this.X)^{2} + (other.Y - this.Y)^{2}}$\\
-$m = this.Radius^{2} \cdot \pi \cdot 5.5$\\
+
+According to Newton each body is pulling on all other bodies with a force, the force is based upon the mass of the bodies and the distance between them.
+
 $F = G \cdot \frac{this.m \cdot other.m}{d^{2}}$
+where $G = 6.67408^{-11}$\\
+
+Since the simulation is based on a two-dimensional plane we could use a system where each object is assigned an x and y coordinate. This allows us to use the Pythagorean theorem to calculate the distance 
+$d = \sqrt{(other.X - this.X)^{2} + (other.Y - this.Y)^{2}}$.\\
+
+We are also required to use a mass assigned to the bodies which is the area with a density of 5.5
+$m = this.Radius^{2} \cdot \pi \cdot 5.5$\\
+
+
+
+\subsubsection{Conservation of momentum}
+When two or bodies bodies collide the direction of the force and the force momentum change, the conservation of force. And since the bodies absorb one another, and it's not elastic, the conservation of momentum follows as such
+$m_{1} \cdot u_{1} + m_{2} \cdot u_{2} = (m_{1} + m_{2} \cdot v$
+where $m$ is the mass of the bodies, $u$ is the speed of respective body and $v$ is the speed after
 
 %------%
 \pagebreak
@@ -170,9 +184,14 @@ Draw is the final step in the simulation chain. It takes the information availab
 \subsection{Gravitational Computation}\label{gravityComputeInfo}
 \todo{Write gravitational computatio section - describe how the gravitational theories are applied in code}
 
+The way we apply the forces is through the use vectors and objects. It first checks the position of another body (GravitationalBody) and computes a force with the help of our formula $F = G \cdot \frac{this.m \cdot other.m}{d^{2}}$ followed by the same calculation of another body not calculated before. then after the force is calculated it moves them according to the chosen timestep. this is repeated for a body until it register a collision.
+\subsubsection{Computing a collision}
+Through the use of a non elastic collision Matlab computes the force of the acceleration and velocity when the two bodies collides resulting with the same, increased or reduced velocity depending on the angle at the moment they collide where the force and velocity are assigned an x,y vector.
+
 %------%
 \section{Results}
 \todo{Write results - describe results and show images.}
+What we have is what looks like a functioning gravitational simulation where we can expect where the bodies go and see that they go there. A fault in the code seems to be that the bodies flies of the screen when they shouldn't and sometimes look like they are avoiding the gravitational pull of other bodies. We assume this might be because the gravitational force is so small once the bodies are more than 10 length units away. (INSERT PICTURE HERE).
 
 %------%
 \section{Discussion}
