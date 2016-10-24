@@ -9,12 +9,12 @@
 		Lule\'a University of Technology\\SE-971 87 Luleå, Sweden}
 \date{\today}
 
-\usepackage{todonotes}
 \usepackage{wrapfig}
 \usepackage{listings}
 \usepackage{mathtools}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage{subfig}
 \usepackage[export]{adjustbox}
 \graphicspath{{Images/}}
 \usepackage[backend=biber,style=numeric,bibencoding=utf8]{biblatex}
@@ -35,17 +35,16 @@ object-oriented capabilites of MATLAB to improve code organization and implement
 \end{abstract}
 
 \pagebreak
-\listoftodos
 \tableofcontents
 
 \pagebreak
 %------%
 \section{Preface}
-\todo{Write preface}
+This report, written in LaTeX, exists to explain the why and how this rather small program was created by us, Alexander Johansson, Jarl Gullberg and Karl Brorsson, October 2016, Luleå.
 
 %------%
 \section{Introduction}
-\todo{Write introduction (describe purpose of program}
+As to why this program was created, or rather its purpose, to simulate, in a 2D plane, the effects of which gravity have on celestial bodies that do/do not have a central gravitational point, what their new point in the 2D plane is, their ne acceleration, their new direction and what happens when two, or more, bodies collides with each other.
 
 %------%
 \section{Theory}
@@ -64,6 +63,7 @@ MATLAB, which falls inside this set of languages, defines every required stateme
 For almost every simulation, the application of these statements and constructs follows a very similar structure. There is a main \emph{loop} which drives the simulation forward one batch of calculations at a time, and a set of control flow statements inside it which determine what specific calculations are made.
 
 The shell of a simulation might look something like this:
+\pagebreak
 \begin{lstlisting}[language=Matlab, tabsize=4, numbers=left, frame=shadowbox]
 stopCondition = false;
 while(!stopCondition)
@@ -79,11 +79,24 @@ the result of the \verb|doComputation| function, which in turn flips the \verb|s
 simulation. This is, of course, a simplifed example with exaggarated control flow for clarity.
 
 \subsection{Gravitational Theory}
-\todo{Expand gravitational theory section with explanations}
-$G = 6.67408^{-11}$\\
-$d = \sqrt{(other.X - this.X)^{2} + (other.Y - this.Y)^{2}}$\\
-$m = this.Radius^{2} \cdot \pi \cdot 5.5$\\
+According to Newton each body is pulling on all other bodies with a force, the force is based upon the mass of the bodies and the distance between them.\\
+
 $F = G \cdot \frac{this.m \cdot other.m}{d^{2}}$
+where $G = 6.67408^{-11}$\\
+
+Since the simulation is based on a two-dimensional plane we could use a system where each object is assigned an x and y coordinate. This allows us to use the Pythagorean theorem to calculate the distance \\
+
+$d = \sqrt{(other.X - this.X)^{2} + (other.Y - this.Y)^{2}}$.\\
+
+We are also required to use a mass assigned to the bodies which is the area with a density of 5.5
+$m = this.Radius^{2} \cdot \pi \cdot 5.5$\\
+
+
+
+\subsubsection{Conservation of momentum}
+When two or bodies bodies collide the direction of the force and the force momentum change, the conservation of force. And since the bodies absorb one another, and it's not elastic, the conservation of momentum follows as such
+$m_{1} \cdot u_{1} + m_{2} \cdot u_{2} = (m_{1} + m_{2} \cdot v$
+where $m$ is the mass of the bodies, $u$ is the speed of respective body and $v$ is the speed after
 
 %------%
 \pagebreak
@@ -168,15 +181,32 @@ AbsorbBody is called when two bodies collide. One body (selected by order of sim
 Draw is the final step in the simulation chain. It takes the information available about the object (radius, colour and position), and uses it to draw a shape onto the visible figure. In our case, this is facilitated through the \verb|rectangle| function, which can be used to draw circles (which, in all honesty, are just rectangles with very, very round corners). The old shape is deleted, and a new one is created, drawn and stored in the instance.
 
 \subsection{Gravitational Computation}\label{gravityComputeInfo}
-\todo{Write gravitational computatio section - describe how the gravitational theories are applied in code}
+The way we apply the forces is through the use vectors and objects. It first checks the position of another body (GravitationalBody) and computes a force with the help of our formula $F = G \cdot \frac{this.m \cdot other.m}{d^{2}}$ followed by the same calculation of another body not calculated before. then after the force is calculated it moves them according to the chosen timestep. this is repeated for a body until it register a collision.
+\subsubsection{Computing a collision}
+Through the use of a non elastic collision Matlab computes the force of the acceleration and velocity when the two bodies collides resulting with the same, increased or reduced velocity depending on the angle at the moment they collide where the force and velocity are assigned an x,y vector.
 
 %------%
 \section{Results}
-\todo{Write results - describe results and show images.}
+What we have is what looks like a functioning gravitational simulation where we can expect where the bodies go and see that they go there. A fault in the code seems to be that the bodies flies of the screen when they shouldn't and sometimes look like they are avoiding the gravitational pull of other bodies. We assume this might be because the gravitational force is so small once the bodies are more than 10 length units away.
 
-%------%
+\begin{figure}[h]
+	\centering
+	\subfloat[first]{\includegraphics[scale=0.1]{frame1.png}\}}
+	\subfloat[first]{\includegraphics[scale=0.1]{frame10.png}}
+	\subfloat[first]{\includegraphics[scale=0.1]{frame20.png}}
+	\subfloat[first]{\includegraphics[scale=0.1]{frame30.png}}
+	\subfloat[first]{\includegraphics[scale=0.1]{frame100.png}}
+	\caption{Six captures at points in the simulation}
+\end{figure}
+
 \section{Discussion}
-\todo{Discuss problems during project and problems with simulation. Time to completion, low forces, etc}
+\subsection{Goal}
+The end goal with this project was to simulate the gravitational forces between celestial bodies, their new positions because of said gravitational forces, calculating their new mass from colliding with each other and their acceleration, velocity and direction after said collision, which has been reached.
+\subsection{Better?}
+One way to improve the simulation is to make sure that the bodies are cept inside the boundaries of the 2D plane so that the bodies will not slingshot away. Put in a counter to keep track of how many bodies are still "alive". 
+\subsection{Uses}
+What can this kind of program be used for? Other than smashing planets, asteroids, meteors and other celestial bodies into each other. 
+It could be used for calculating a path for a satellite or a bigger spacecraft, eventually, through an asteroid field, or avoiding entire planets, maybe. 
 
 \printbibliography
 
