@@ -1,6 +1,15 @@
 function main()
+<<<<<<< HEAD
 	
 	
+=======
+	bodyCount = 0;
+	minMaxX = [0 0];
+	minMaxY = [0 0];
+	minMaxR = [0 0];
+	withGreatAttractor = false;
+	timeStep = 0;
+>>>>>>> d2377d30a93858f7c731797b0366ac428b0ceb05
 
 	% Setup - simulation parameters
 	isDebug = true;
@@ -10,20 +19,26 @@ function main()
 		minMaxY = [0, 1000];
 		minMaxR = [2, 8];
 		
-		withGreatAttractor = false;
+		withGreatAttractor = true;
 		
-		timeStep = 60;
+		timeStep = 120;
 		
 		rng('shuffle', 'simdTwister')
 	else
 		bodyCount = input('Enter the desired number of simulated bodies: \n$: ');
-		minMaxX = input('Enter the minimum and maxiumum X values as a vector in the format [XMin, XMax]: \n$: ');
-		minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax]: \n$: ');
-		minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax]: \n$: ');
+		minMaxX = input('Enter the minimum and maxiumum X values as a vector in the format [XMin, XMax] \n$: ');
+		minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax] \n$: ');
+		minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax] \n$: ');
+		withGreatAttractorInput = input('Should a fixed point be included in the simulation? \n(Effectively, this will follow a large body in a field of other smaller bodies) [y/n] \n$: ', 's');
+	
+		if (lower(withGreatAttractorInput) == 'y')
+			withGreatAttractor = true;
+		end
+	
 		
 		timeStep = input('Enter the desired time step of the simulation (in milliseconds): \n$: ');
 		
-		rng(input('Enter a seed for the random number generator: \n'), 'simdTwister')
+		rng(input('Enter a non-negative seed value for the random number generator: \n'), 'simdTwister')
 		
 		input('Parameters loaded. Press enter to begin.');
 	end
@@ -57,7 +72,7 @@ function main()
 	
 	while (size(gravitationalBodies,  2) > 1)
 		% Run one frame of the simulation and store the time taken to 
-		% perform that simulation.
+		% perform that simulation (in milliseconds).
 		[lastFrameTime, gravitationalBodies] = RunFrame(gravitationalBodies, lastFrameTime, timeStep, graphAxes);
 		lastFrameTime = lastFrameTime * 1000;
 	end
@@ -108,7 +123,12 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 				if (otherGravitationalBody.IsFixedPoint)
 					otherGravitationalBody.AbsorbBody(gravitationalBody);
 				else
-					gravitationalBody.AbsorbBody(otherGravitationalBody);
+					if (gravitationalBody.CalculateMass() > otherGravitationalBody.CalculateMass())
+						gravitationalBody.AbsorbBody(otherGravitationalBody);
+					else
+						otherGravitationalBody.AbsorbBody(gravitationalBody);
+					end
+					
 				end
 			else
 				% Compute the forces
@@ -122,7 +142,7 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 		gravitationalBody = remainingBodies(j);
 
 		if (~gravitationalBody.IsAlive)
-			continue
+			continue;
 		end	
 		
 		gravitationalBody.SimulateForces(deltaTime, seconds);
@@ -134,7 +154,7 @@ function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime,
 		gravitationalBody = remainingBodies(i);
 		
 		if (~gravitationalBody.IsAlive)
-			continue
+			continue;
 		end
 
 		gravitationalBody.Draw(graphAxes);
