@@ -10,11 +10,24 @@
 
 	Due to constraints, the main loop has been placed in the 
 	class declaration as a static function. In order to run the 
-	simulation, run the following command without parameters:
+	simulation, run the following static function without parameters:
 
 	GravitationalBody.Simulate()
 
     Any required parameters will be collected from the user. 
+
+
+	A simpler simulation with standard values can be started using the 
+	following static function:
+
+	GravitationalBody.SimulateSimple(bodyCount)
+
+
+	A parameterized static function is also available for use within
+	other code, in the following format:
+	
+	GravitationalBody.SimulateParameterized(bodyCount, minMaxX, minMaxY, minMaxR, withGreatAttractor, timeStep)
+
 
     Due to a number of factors, the simulation may take a very long time to
     complete - objects are commonly slingshotted away from the visible
@@ -98,47 +111,31 @@ classdef GravitationalBody < handle
             result = (1-t)*v0+t*v1;  
 		end
 		
-		function Simulate()
-			bodyCount = 0;
-			minMaxX = [0 0];
-			minMaxY = [0 0];
-			minMaxR = [0 0];
+		function SimulateSimple(bodyCount)
+			% SIMULATESIMPLE(bodyCount) Starts a simple simulation with the
+			% specified number of bodies.
+			%
+			% This function starts a simple simulation with the specified 
+			% number of bodies using a set of standard settings (a surface
+			% of 1000x1000, min/max radii of 2 and 8 and a timestep of 120)
+			%
+			% PARAM bodyCount An unsigned integer, specifying the number of
+			% bodies to create in the simulation.
+			
+			
+			minMaxX = [0, 1000];
+			minMaxY = [0, 1000];
+			minMaxR = [2, 8];
+
 			withGreatAttractor = false;
-			timeStep = 0;
 
-			% Setup - simulation parameters
-			isDebug = false;
-			if (isDebug)
-				bodyCount = 100;
-				minMaxX = [0, 1000];
-				minMaxY = [0, 1000];
-				minMaxR = [2, 8];
+			timeStep = 120;
 
-				withGreatAttractor = false;
-
-				timeStep = 120;
-
-				rng('shuffle', 'simdTwister')
-			else
-				bodyCount = input('Enter the desired number of simulated bodies: \n$: ');
-				minMaxX = input('Enter the minimum and maxiumum X values as a vector in the format [XMin, XMax] \n$: ');
-				minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax] \n$: ');
-				minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax] \n$: ');
-				withGreatAttractorInput = input('Should a fixed point be included in the simulation? \n(Effectively, this will follow a large body in a field of other smaller bodies) [y/n] \n$: ', 's');
-
-				if (lower(withGreatAttractorInput) == 'y')
-					withGreatAttractor = true;
-				end
-
-
-				timeStep = input('Enter the desired time step of the simulation (in milliseconds): \n$: ');
-
-				%rng(input('Enter a non-negative seed value for the random number generator: \n'), 'simdTwister')
-				rng('shuffle', 'simdTwister')
-
-				input('Parameters loaded. Press enter to begin.');
-			end
-
+			rng('shuffle');
+			GravitationalBody.SimulateParameterized(bodyCount, minMaxX, minMaxY, minMaxR, withGreatAttractor, timeStep);
+		end
+		
+		function SimulateParameterized(bodyCount, minMaxX, minMaxY, minMaxR, withGreatAttractor, timeStep)
 			% Setup - time delta
 			lastFrameTime = 5;
 
@@ -172,6 +169,50 @@ classdef GravitationalBody < handle
 				[lastFrameTime, gravitationalBodies] = GravitationalBody.RunFrame(gravitationalBodies, lastFrameTime, timeStep, graphAxes);
 				lastFrameTime = lastFrameTime * 1000;
 			end
+		end
+		
+		function Simulate()
+			bodyCount = 0;
+			minMaxX = [0 0];
+			minMaxY = [0 0];
+			minMaxR = [0 0];
+			withGreatAttractor = false;
+			timeStep = 0;
+
+			% Setup - simulation parameters
+			isDebug = false;
+			if (isDebug)
+				bodyCount = 100;
+				minMaxX = [0, 1000];
+				minMaxY = [0, 1000];
+				minMaxR = [2, 8];
+
+				withGreatAttractor = false;
+
+				timeStep = 120;
+
+				rng('shuffle');
+			else
+				bodyCount = input('Enter the desired number of simulated bodies: \n$: ');
+				minMaxX = input('Enter the minimum and maxiumum X values as a vector in the format [XMin, XMax] \n$: ');
+				minMaxY = input('Enter the minimum and maxiumum Y values as a vector in the format [YMin, YMax] \n$: ');
+				minMaxR = input('Enter the minimum and maximum initial radii values of the bodies as a vector in the format [RMin, RMax] \n$: ');
+				withGreatAttractorInput = input('Should a fixed point be included in the simulation? \n(Effectively, this will follow a large body in a field of other smaller bodies) [y/n] \n$: ', 's');
+
+				if (lower(withGreatAttractorInput) == 'y')
+					withGreatAttractor = true;
+				end
+
+
+				timeStep = input('Enter the desired time step of the simulation (in milliseconds): \n$: ');
+
+				%rng(input('Enter a non-negative seed value for the random number generator: \n'), 'simdTwister')
+				rng('shuffle');
+
+				input('Parameters loaded. Press enter to begin.');
+			end
+			
+			GravitationalBody.SimulateParameterized(bodyCount, minMaxX, minMaxY, minMaxR, withGreatAttractor, timeStep)
 		end
 
 		function [timeTaken, remainingBodies] = RunFrame(gravitationalBodies, deltaTime, seconds, graphAxes)
@@ -447,7 +488,7 @@ classdef GravitationalBody < handle
 			
 			delete(this.GraphicalObject);
 			
-			this.GraphicalObject = rectangle(graphAxes, ...
+			this.GraphicalObject = rectangle(...
 					'Position', [xpos, ypos, side, side], ...
 					'Curvature', [1, 1], ...
 					'FaceColor', this.RGB);
